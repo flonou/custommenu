@@ -189,8 +189,6 @@ class CustomMenu extends CommonDBTM
     {
         $options = [];
 
-        $options['massiveaction'] = true;
-
         $options[] = [
             'id'       => 1,
             'table'    => self::getTable(),
