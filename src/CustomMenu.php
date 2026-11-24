@@ -14,7 +14,7 @@ use Toolbox;
  */
 class CustomMenu extends CommonDBTM
 {
-    public static $rightname = 'config';
+    public static string $rightname = 'config';
 
     /**
      * Valid link targets.
@@ -166,6 +166,21 @@ class CustomMenu extends CommonDBTM
     }
 
     /**
+     * Delete multiple custom menu entries at once.
+     *
+     * @param array $ids Array of entry IDs to delete.
+     * @return bool
+     */
+    public static function deleteItems(array $ids): bool
+    {
+        $custommenu = new self();
+        foreach ($ids as $id) {
+            $custommenu->delete(['id' => $id]);
+        }
+        return true;
+    }
+
+    /**
      * Search options for the list view.
      *
      * @return array
@@ -242,6 +257,9 @@ class CustomMenu extends CommonDBTM
             'name'     => __('Sort order', 'custommenu'),
             'datatype' => 'integer',
         ];
+
+        // Enable bulk actions (e.g., delete) for this itemtype
+        $options['massiveaction'] = true;
 
         return $options;
     }

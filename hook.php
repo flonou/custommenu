@@ -1,8 +1,8 @@
 <?php
 
-use DBConnection;
 use GlpiPlugin\CustomMenu\CustomMenu;
-use Migration;
+
+require_once __DIR__ . '/src/CustomMenu.php';
 
 /**
  * Install the Custom Menu plugin.
@@ -23,14 +23,14 @@ function plugin_custommenu_install(): bool
     $table = CustomMenu::getTable();
     if (!$DB->tableExists($table)) {
         $query = "CREATE TABLE `$table` (
-                    `id`         INT(11) NOT NULL AUTO_INCREMENT,
+                    `id`         INT UNSIGNED NOT NULL AUTO_INCREMENT,
                     `name`       VARCHAR(255) NOT NULL,
                     `url`        VARCHAR(255) NOT NULL,
                     `icon`       VARCHAR(100) DEFAULT NULL,
                     `position`   VARCHAR(50) NOT NULL DEFAULT 'end',
                     `target`     VARCHAR(20) NOT NULL DEFAULT '_self',
                     `is_active`  TINYINT(1) NOT NULL DEFAULT 1,
-                    `sort_order` INT(11) NOT NULL DEFAULT 0,
+                    `sort_order` INT UNSIGNED NOT NULL DEFAULT 0,
                     PRIMARY KEY (`id`)
                  ) ENGINE=InnoDB
                  DEFAULT CHARSET={$default_charset}

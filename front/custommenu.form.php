@@ -5,6 +5,8 @@ use Html;
 
 include ('../../../inc/includes.php');
 
+Session::checkLoginUser();
+
 $custommenu = new CustomMenu();
 
 if (isset($_POST["add"])) {
