@@ -189,25 +189,23 @@ class CustomMenu extends CommonDBTM
     {
         $options = [];
 
-        $options[] = [
-            'id'   => 'common',
-            'name' => __('Characteristics'),
-        ];
+        $options['massiveaction'] = true;
 
         $options[] = [
             'id'       => 1,
+            'table'    => self::getTable(),
+            'field'    => 'id',
+            'name'     => __('ID'),
+            'datatype' => 'integer',
+        ];
+
+        $options[] = [
+            'id'       => 2,
             'table'    => self::getTable(),
             'field'    => 'name',
             'name'     => __('Name'),
             'type'     => 'itemlink',
             'linkname' => 'id',
-        ];
-
-        $options[] = [
-            'id'    => 2,
-            'table' => self::getTable(),
-            'field' => 'id',
-            'name'  => __('ID'),
         ];
 
         $options[] = [
@@ -257,9 +255,6 @@ class CustomMenu extends CommonDBTM
             'name'     => __('Sort order', 'custommenu'),
             'datatype' => 'integer',
         ];
-
-        // Enable bulk actions (e.g., delete) for this itemtype
-        $options['massiveaction'] = true;
 
         return $options;
     }
