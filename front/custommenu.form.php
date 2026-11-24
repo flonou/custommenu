@@ -6,6 +6,7 @@ use Html;
 include ('../../../inc/includes.php');
 
 Session::checkLoginUser();
+Session::checkRight(CustomMenu::$rightname, CREATE);
 
 $custommenu = new CustomMenu();
 

@@ -21,6 +21,9 @@ function plugin_init_custommenu()
 
     // Redefine the main GLPI menu with the custom entries.
     $PLUGIN_HOOKS[Hooks::REDEFINE_MENUS]['custommenu'] = 'plugin_custommenu_redefine_menus';
+
+    // Register the plugin right for CustomMenu
+    Plugin::registerClass(CustomMenu::class);
 }
 
 

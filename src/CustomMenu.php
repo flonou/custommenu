@@ -14,7 +14,7 @@ use Toolbox;
  */
 class CustomMenu extends CommonDBTM
 {
-    public static string $rightname = 'config';
+    public static string $rightname = 'plugin_custommenu';
 
     /**
      * Valid link targets.
