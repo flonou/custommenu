@@ -1,0 +1,74 @@
+{% extends "generic_show_form.html.twig" %}
+{% import "components/form/fields_macros.html.twig" as fields %}
+
+{% block more_fields %}
+    {{ fields.textField(
+        'name',
+        item.fields['name'] ?? '',
+        __('Name'),
+        {
+            'required' => true,
+            'size'     => 40
+        }
+    ) }}
+
+    {{ fields.textField(
+        'url',
+        item.fields['url'] ?? '',
+        __('URL'),
+        {
+            'required' => true,
+            'size'     => 60,
+            'placeholder' => 'https://example.com or /front/somepage.php'
+        }
+    ) }}
+
+    {{ fields.textField(
+        'icon',
+        item.fields['icon'] ?? 'ti ti-link',
+        __('Icon'),
+        {
+            'size'        => 40,
+            'placeholder' => 'ti ti-home'
+        }
+    ) }}
+    <div class="form-field__help">
+        {{ __('Icon class from', 'custommenu') }}
+        <a href="https://tabler.io/icons" target="_blank" rel="noopener">Tabler Icons</a>
+        {{ __('(e.g. "ti ti-home").', 'custommenu') }}
+    </div>
+
+    {{ fields.textField(
+        'position',
+        item.fields['position'] ?? 'end',
+        __('Position'),
+        {
+            'size'        => 30,
+            'placeholder' => 'after:assets, before:help, 5, or end'
+        }
+    ) }}
+    <div class="form-field__help">
+        {{ __('Position format: "after:<menukey>", "before:<menukey>", a numeric index, or "end".', 'custommenu') }}
+    </div>
+
+    {{ fields.dropdown(
+        'target',
+        item.fields['target'] ?? '_self',
+        __('Target'),
+        {
+            'values' => item.getAvailableTargets()
+        }
+    ) }}
+
+    {{ fields.dropdownYesNo(
+        'is_active',
+        item.fields['is_active'] ?? 1,
+        __('Active')
+    ) }}
+
+    {{ fields.integerField(
+        'sort_order',
+        item.fields['sort_order'] ?? 0,
+        __('Sort order', 'custommenu')
+    ) }}
+{% endblock %}
