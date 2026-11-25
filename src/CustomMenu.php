@@ -14,7 +14,7 @@ use Toolbox;
  */
 class CustomMenu extends CommonDBTM
 {
-    public static string $rightname = 'plugin_custommenu';
+    public static string $rightname = 'config';
 
     /**
      * Valid link targets.
@@ -178,6 +178,27 @@ class CustomMenu extends CommonDBTM
             $custommenu->delete(['id' => $id]);
         }
         return true;
+    }
+
+    /**
+     * Get an empty instance of the custom menu entry.
+     *
+     * @return array
+     */
+    public function getEmpty()
+    {
+        $empty = [
+            'id'         => 0,
+            'name'       => '',
+            'url'        => '',
+            'icon'       => self::DEFAULT_ICON,
+            'target'     => self::TARGET_SELF,
+            'position'   => 'end',
+            'is_active'  => 0,
+            'sort_order' => 0,
+        ];
+
+        return $empty;
     }
 
     /**
