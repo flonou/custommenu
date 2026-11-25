@@ -1,137 +1,152 @@
+
 {% extends "generic_show_form.html.twig" %}
 {% import "components/form/fields_macros.html.twig" as fields %}
+{% import "components/form/basic_inputs_macros.html.twig" as inputs %}
 
 {% block more_fields %}
+
+    {# URL #}
+    {{ fields.textField(
+        'url',
+        item.fields['url'] ?? '',
+        __('URL'),
+        {
+            'required': true,
+            'size': 60,
+            'placeholder': 'https://example.com or /front/somepage.php',
+            'is_horizontal': true
+        }
+    ) }}
+
+    {# Icon #}
+    {% set icon_help %}
+        <div class="text-muted small">
+            {{ __('Icon class from', 'custommenu') }}
+            <a href="https://tabler.io/icons" target="_blank" rel="noopener">
+                Tabler Icons
+            </a>
+            {{ __('(e.g. "ti ti-home").', 'custommenu') }}
+        </div>
+    {% endset %}
+
+    {{ fields.textField(
+        'icon',
+        item.fields['icon'] ?? 'ti ti-link',
+        __('Icon'),
+        {
+            'size': 40,
+            'placeholder': 'ti ti-home',
+            'is_horizontal': true,
+            'add_field_html': icon_help
+        }
+    ) }}
+
+    {# Position type #}
+    {{ fields.dropdownArrayField(
+        'position_type',
+        item.fields['position_type'] ?? 'end',
+        {
+            'end': __('End of menu', 'custommenu'),
+            'after': __('After menu item', 'custommenu'),
+            'before': __('Before menu item', 'custommenu'),
+            'index': __('At index', 'custommenu')
+        },
+        __('Position type', 'custommenu'),
+        {
+            'is_horizontal': true
+        }
+    ) }}
+
+    {# Position value #}
+    {% set position_help %}
+        <div class="text-muted small">
+            {{ __('For "After" or "Before": enter menu key (e.g., "assets", "help"). For "At index": enter a number. Leave empty for "End of menu".', 'custommenu') }}
+        </div>
+    {% endset %}
+
+    {{ fields.textField(
+        'position_value',
+        item.fields['position_value'] ?? '',
+        __('Position value', 'custommenu'),
+        {
+            'size': 30,
+            'placeholder': __('Menu key or index', 'custommenu'),
+            'is_horizontal': true,
+            'add_field_html': position_help
+        }
+    ) }}
+
+    {# Hidden position field #}
+    {{ inputs.hidden('position', item.fields['position'] ?? 'end') }}
+
+    {# Target #}
+    {{ fields.dropdownArrayField(
+        'target',
+        item.fields['target'] ?? '_self',
+        item.getAvailableTargets(),
+        __('Target'),
+        {
+            'is_horizontal': true
+        }
+    ) }}
+
+    {# Sort order #}
+    {% set sort_help %}
+        <div class="text-muted small">
+            {{ __('Determines the display order of menu items with the same position. Lower numbers appear first.', 'custommenu') }}
+        </div>
+    {% endset %}
+
+    {{ fields.numberField(
+        'sort_order',
+        item.fields['sort_order'] ?? 0,
+        __('Sort order', 'custommenu'),
+        {
+            'min': 0,
+            'is_horizontal': true,
+            'add_field_html': sort_help
+        }
+    ) }}
+
     {# Position field JavaScript #}
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const positionTypeSelect = document.getElementById('position_type');
-        const positionValueContainer = document.getElementById('position_value_container');
-        const positionValueInput = document.getElementById('position_value');
-        const positionHiddenInput = document.querySelector('input[name="position"]');
-        
-        if (!positionTypeSelect || !positionValueContainer || !positionHiddenInput) {
+    document.addEventListener('DOMContentLoaded', function () {
+        const positionType = document.querySelector('[name="position_type"]');
+        const positionValue = document.querySelector('[name="position_value"]');
+        const positionHidden = document.querySelector('[name="position"]');
+
+        if (!positionType || !positionHidden) {
             return;
         }
-        
-        // Parse existing position value to populate fields
-        const currentPosition = positionHiddenInput.value;
-        let positionType = 'end';
-        let positionValue = '';
-        
-        if (currentPosition === 'end') {
-            positionType = 'end';
-        } else if (currentPosition.startsWith('after:')) {
-            positionType = 'after';
-            positionValue = currentPosition.substring(6);
-        } else if (currentPosition.startsWith('before:')) {
-            positionType = 'before';
-            positionValue = currentPosition.substring(7);
-        } else if (!isNaN(currentPosition)) {
-            positionType = 'index';
-            positionValue = currentPosition;
-        }
-        
-        positionTypeSelect.value = positionType;
-        if (positionValueInput) {
-            positionValueInput.value = positionValue;
-        }
-        
-        // Update hidden position field when type or value changes
-        function updatePositionField() {
-            const selectedType = positionTypeSelect.value;
-            const value = positionValueInput ? positionValueInput.value.trim() : '';
-            
-            let position = 'end';
-            if (selectedType === 'after' && value) {
-                position = 'after:' + value;
-            } else if (selectedType === 'before' && value) {
-                position = 'before:' + value;
-            } else if (selectedType === 'index' && value) {
-                position = value;
+
+        function updatePosition() {
+            const type = positionType.value;
+            const value = positionValue ? positionValue.value.trim() : '';
+
+            switch (type) {
+                case 'after':
+                case 'before':
+                    positionHidden.value = value ? type + ':' + value : 'end';
+                    break;
+
+                case 'index':
+                    positionHidden.value = value ? value : 'end';
+                    break;
+
+                default:
+                    positionHidden.value = 'end';
             }
-            
-            positionHiddenInput.value = position;
         }
-        
-        // Add event listeners
-        if (positionTypeSelect) {
-            positionTypeSelect.addEventListener('change', updatePositionField);
+
+        positionType.addEventListener('change', updatePosition);
+
+        if (positionValue) {
+            positionValue.addEventListener('input', updatePosition);
+            positionValue.addEventListener('change', updatePosition);
         }
-        
-        if (positionValueInput) {
-            positionValueInput.addEventListener('input', updatePositionField);
-            positionValueInput.addEventListener('change', updatePositionField);
-        }
+
+        updatePosition();
     });
     </script>
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            {{ fields.textField(
-                'url',
-                item.fields['url'] ?? '',
-                __('URL'),
-                {
-                    'required': true,
-                    'size': 60,
-                    'placeholder': 'https://example.com or /front/somepage.php'
-                }
-            ) }}
 
-            <div class="form-field">
-                <label for="icon">{{ __('Icon') }}</label>
-                <input type="text" name="icon" id="icon" 
-                       value="{{ item.fields['icon'] ?? 'ti ti-link' }}" 
-                       size="40" 
-                       placeholder="ti ti-home"
-                       class="form-control">
-                <div class="form-field__help">
-                    {{ __('Icon class from', 'custommenu') }}
-                    <a href="https://tabler.io/icons" target="_blank" rel="noopener">Tabler Icons</a>
-                    {{ __('(e.g. "ti ti-home").', 'custommenu') }}
-                </div>
-            </div>
-
-            <div class="form-field">
-                <label for="position_type">{{ __('Position type', 'custommenu') }}</label>
-                <div class="d-flex gap-2">
-                    <select name="position_type" id="position_type" class="form-control position-type-select" style="flex: 0 0 200px;">
-                        <option value="end" {% if (item.fields['position_type'] ?? 'end') == 'end' %}selected{% endif %}>{{ __('End of menu', 'custommenu') }}</option>
-                        <option value="after" {% if (item.fields['position_type'] ?? '') == 'after' %}selected{% endif %}>{{ __('After menu item', 'custommenu') }}</option>
-                        <option value="before" {% if (item.fields['position_type'] ?? '') == 'before' %}selected{% endif %}>{{ __('Before menu item', 'custommenu') }}</option>
-                        <option value="index" {% if (item.fields['position_type'] ?? '') == 'index' %}selected{% endif %}>{{ __('At index', 'custommenu') }}</option>
-                    </select>
-                    <input type="text" name="position_value" id="position_value" 
-                           value="{{ item.fields['position_value'] ?? '' }}" 
-                           size="30" 
-                           placeholder="{{ __('Menu key or index', 'custommenu') }}"
-                           class="form-control" style="flex: 1;">
-                </div>
-                <div class="form-field__help">
-                    {{ __('For "After" or "Before": enter menu key (e.g., "assets", "help"). For "At index": enter a number. Leave empty for "End of menu".', 'custommenu') }}
-                </div>
-            </div>
-            
-            <input type="hidden" name="position" value="{{ item.fields['position'] ?? 'end' }}">
-
-            <div class="form-field">
-                <label for="target">{{ __('Target') }}</label>
-                <select name="target" id="target" class="form-control">
-                    {% for key, label in item.getAvailableTargets() %}
-                        <option value="{{ key }}" {% if (item.fields['target'] ?? '') == key %}selected{% endif %}>{{ label }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="form-field">
-                <label for="sort_order">{{ __('Sort order', 'custommenu') }}</label>
-                <input type="number" name="sort_order" id="sort_order" 
-                       value="{{ item.fields['sort_order'] ?? 0 }}" 
-                       class="form-control">
-                <div class="form-field__help">
-                    {{ __('Determines the display order of menu items with the same position. Lower numbers appear first.', 'custommenu') }}
-                </div>
-            </div>
-        </div>
-    </div>
 {% endblock %}

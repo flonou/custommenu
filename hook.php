@@ -182,16 +182,17 @@ function plugin_custommenu_insert_relative(
 ): array {
     $new_menu = [];
     $inserted = false;
+    $reference_lower = strtolower($reference);
 
     foreach ($menu as $key => $value) {
-        if ($key === $reference && $mode === 'before' && !$inserted) {
+        if (strtolower($key) === $reference_lower && $mode === 'before' && !$inserted) {
             $new_menu[$new_key] = $entry;
             $inserted = true;
         }
 
         $new_menu[$key] = $value;
 
-        if ($key === $reference && $mode === 'after' && !$inserted) {
+        if (strtolower($key) === $reference_lower && $mode === 'after' && !$inserted) {
             $new_menu[$new_key] = $entry;
             $inserted = true;
         }

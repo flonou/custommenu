@@ -36,14 +36,6 @@ class CustomMenu extends CommonDBTM
     }
 
     /**
-     * @return string
-     */
-    public static function getTableName()
-    {
-        return 'glpi_plugin_custommenu_entries';
-    }
-
-    /**
      * Get the icon for the CustomMenu class.
      *
      * @return string
@@ -268,22 +260,16 @@ class CustomMenu extends CommonDBTM
         $options[] = [
             'id'       => 1,
             'table'    => self::getTable(),
-            'field'    => 'id',
-            'name'     => __('ID'),
-            'datatype' => 'integer',
+            'field'    => 'name',
+            'name'     => __('Name'),
+            'datatype'      => 'itemlink',
+            'itemlink_type' => $this->getType(),
+            'itemtype'       => self::class,
+            'massiveaction' => false,
         ];
 
         $options[] = [
             'id'       => 2,
-            'table'    => self::getTable(),
-            'field'    => 'name',
-            'name'     => __('Name'),
-            'type'     => 'itemlink',
-            'linkname' => 'id',
-        ];
-
-        $options[] = [
-            'id'       => 3,
             'table'    => self::getTable(),
             'field'    => 'url',
             'name'     => __('URL'),
@@ -291,7 +277,7 @@ class CustomMenu extends CommonDBTM
         ];
 
         $options[] = [
-            'id'       => 4,
+            'id'       => 3,
             'table'    => self::getTable(),
             'field'    => 'icon',
             'name'     => __('Icon'),
@@ -299,7 +285,7 @@ class CustomMenu extends CommonDBTM
         ];
 
         $options[] = [
-            'id'       => 5,
+            'id'       => 4,
             'table'    => self::getTable(),
             'field'    => 'position',
             'name'     => __('Position'),
@@ -307,7 +293,7 @@ class CustomMenu extends CommonDBTM
         ];
 
         $options[] = [
-            'id'       => 6,
+            'id'       => 5,
             'table'    => self::getTable(),
             'field'    => 'target',
             'name'     => __('Target'),
@@ -315,7 +301,7 @@ class CustomMenu extends CommonDBTM
         ];
 
         $options[] = [
-            'id'       => 7,
+            'id'       => 6,
             'table'    => self::getTable(),
             'field'    => 'is_active',
             'name'     => __('Active'),
@@ -323,11 +309,11 @@ class CustomMenu extends CommonDBTM
         ];
 
         $options[] = [
-            'id'       => 8,
+            'id'       => 7,
             'table'    => self::getTable(),
             'field'    => 'sort_order',
             'name'     => __('Sort order', 'custommenu'),
-            'datatype' => 'integer',
+            'datatype' => 'number',
         ];
 
         return $options;
