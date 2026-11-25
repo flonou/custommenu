@@ -36,7 +36,7 @@ if (isset($_POST["add"])) {
     Html::header(
         CustomMenu::getTypeName(),
         $_SERVER['PHP_SELF'],
-        "setup",
+        "config",
         CustomMenu::class,
         "custommenu"
     );
