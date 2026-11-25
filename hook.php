@@ -1,8 +1,10 @@
 <?php
 
 use GlpiPlugin\CustomMenu\CustomMenu;
+use GlpiPlugin\CustomMenu\CustomMenuProfile;
 
 require_once __DIR__ . '/src/CustomMenu.php';
+require_once __DIR__ . '/src/CustomMenuProfile.php';
 
 /**
  * Install the Custom Menu plugin.
@@ -41,6 +43,9 @@ function plugin_custommenu_install(): bool
     // Execute the whole migration.
     $migration->executeMigration();
 
+    // Install profile rights
+    CustomMenuProfile::installProfileRights();
+
     return true;
 }
 
@@ -62,6 +67,9 @@ function plugin_custommenu_uninstall(): bool
             $DB->doQuery("DROP TABLE `$table`");
         }
     }
+
+    // Remove profile rights
+    CustomMenuProfile::uninstallProfileRights();
 
     return true;
 }

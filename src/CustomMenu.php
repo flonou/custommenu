@@ -14,7 +14,7 @@ use Toolbox;
  */
 class CustomMenu extends CommonDBTM
 {
-    public static string $rightname = 'config';
+    public static string $rightname = 'custommenu::custommenuentry';
 
     /**
      * Valid link targets.
@@ -41,6 +41,16 @@ class CustomMenu extends CommonDBTM
     public static function getTableName()
     {
         return 'glpi_plugin_custommenu_entries';
+    }
+
+    /**
+     * Get the icon for the CustomMenu class.
+     *
+     * @return string
+     */
+    public static function getIcon(): string
+    {
+        return self::DEFAULT_ICON;
     }
 
     /**
