@@ -8,7 +8,6 @@ use Glpi\Plugin\Hooks;
 use GlpiPlugin\CustomMenu\CustomMenu;
 use GlpiPlugin\CustomMenu\CustomMenuProfile;
 
-require_once __DIR__ . '/src/Config.php';
 require_once __DIR__ . '/src/CustomMenu.php';
 require_once __DIR__ . '/src/CustomMenuProfile.php';
 
@@ -18,6 +17,8 @@ require_once __DIR__ . '/src/CustomMenuProfile.php';
 function plugin_init_custommenu()
 {
     global $PLUGIN_HOOKS;
+    
+    $PLUGIN_HOOKS[Hooks::MENU_TOADD]['custommenu'] = ['setup' => CustomMenu::class];
 
     // Configuration page shown by the "Configure" button on the plugin entry.
     $PLUGIN_HOOKS[Hooks::CONFIG_PAGE]['custommenu'] = 'front/custommenu.php';

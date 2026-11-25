@@ -246,6 +246,56 @@ function plugin_custommenu_build_key(int $id): string
 }
 
 /**
+ * Normalize a URL for menu entries.
+ * - If the URL is relative, keep it as is
+ * - If the URL is absolute and from the same server, convert it to relative
+ * - If the URL is absolute and from a different server, keep it absolute
+ *
+ * @param string $url The URL to normalize
+ * @return string The normalized URL
+ */
+function plugin_custommenu_normalize_url(string $url): string
+{
+    // If URL is already relative, keep it as is
+    if (strpos($url, '://') === false) {
+        return $url;
+    }
+
+    // Parse the URL
+    $parsed = parse_url($url);
+    
+    // If parsing failed or no host, return as is
+    if ($parsed === false || !isset($parsed['host'])) {
+        return $url;
+    }
+
+    // Get the current server host
+    $current_host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? '';
+    
+    // Remove port from host if present for comparison
+    $parsed_host = $parsed['host'];
+    if (strpos($parsed_host, ':') !== false) {
+        $parsed_host = strstr($parsed_host, ':', true);
+    }
+    
+    $current_host_clean = $current_host;
+    if (strpos($current_host_clean, ':') !== false) {
+        $current_host_clean = strstr($current_host_clean, ':', true);
+    }
+
+    // If the host matches the current server, convert to relative URL
+    if (strtolower($parsed_host) === strtolower($current_host_clean)) {
+        $path = $parsed['path'] ?? '';
+        $query = isset($parsed['query']) ? '?' . $parsed['query'] : '';
+        $fragment = isset($parsed['fragment']) ? '#' . $parsed['fragment'] : '';
+        return $path . $query . $fragment;
+    }
+
+    // Otherwise, keep the absolute URL
+    return $url;
+}
+
+/**
  * Redefine the main GLPI menu with the custom entries.
  *
  * @param array $menu Existing GLPI menu definitions.
@@ -272,10 +322,13 @@ function plugin_custommenu_redefine_menus(array $menu): array
     foreach ($iterator as $row) {
         $key = plugin_custommenu_build_key((int) $row['id']);
 
+        // Normalize the URL
+        $normalized_url = plugin_custommenu_normalize_url($row['url']);
+
         $entry = [
             'title'   => $row['name'],
             'icon'    => $row['icon'] ?: CustomMenu::DEFAULT_ICON,
-            'default' => $row['url'],
+            'default' => $normalized_url,
             'content' => [],
         ];
 
