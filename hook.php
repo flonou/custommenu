@@ -43,8 +43,10 @@ function plugin_custommenu_install(): bool
     // Execute the whole migration.
     $migration->executeMigration();
 
-    // Install profile rights
-    CustomMenuProfile::installProfileRights();
+    // add rights to current profile
+    foreach (MyPlugin_Profile::getAllRights() as $right) {
+        ProfileRight::addProfileRights([$right['field']]);
+    }
 
     return true;
 }
@@ -68,8 +70,10 @@ function plugin_custommenu_uninstall(): bool
         }
     }
 
-    // Remove profile rights
-    CustomMenuProfile::uninstallProfileRights();
+    // delete rights for current profile
+    foreach (MyPlugin_Profile::getAllRights() as $right) {
+        ProfileRight::deleteProfileRights([$right['field']]);
+    }
 
     return true;
 }

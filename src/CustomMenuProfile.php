@@ -3,6 +3,7 @@
 namespace GlpiPlugin\CustomMenu;
 
 use CommonGLPI;
+use Html;
 use Profile;
 use Session;
 
@@ -27,13 +28,13 @@ class CustomMenuProfile extends Profile
         $profile = new Profile();
         $profile->getFromDB($item->getID());
 
-        if ($profile->canEdit()) {
+        if ($canedit = Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, PURGE])) {
             echo "<form method='post' action='" . $profile->getFormURL() . "'>";
         }
 
         echo "<div class='spaced'>";
         echo "<h2>" . CustomMenu::getTypeName(Session::getPluralNumber()) . "</h2>";
-        
+
         $profile->displayRightsChoiceMatrix([
             [
                 'itemtype' => CustomMenu::class,
@@ -42,12 +43,12 @@ class CustomMenuProfile extends Profile
             ],
         ], ['title' => CustomMenu::getTypeName(Session::getPluralNumber())]);
 
-        if ($profile->canEdit()) {
+        if ($canedit) {
             echo "<div class='center'>";
-            echo "<input type='hidden' name='id' value='" . $item->getID() . "'>";
-            echo "<input type='submit' name='update' value='" . _sx('button', 'Save') . "' class='submit'>";
+            echo Html::hidden('id', ['value' => $item->getID()]);
+            echo Html::submit(_sx('button', 'Save'), ['name' => 'update']);
             echo "</div>";
-            echo "</form>";
+            Html::closeForm();
         }
 
         echo "</div>";

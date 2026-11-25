@@ -27,7 +27,9 @@ function plugin_init_custommenu()
 
     // Register plugin classes
     Plugin::registerClass(CustomMenu::class);
-    Plugin::registerClass(CustomMenuProfile::class);
+    Plugin::registerClass(CustomMenuProfile::class, [
+        'addtabon' => Profile::class
+    ]);
 }
 
 
