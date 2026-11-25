@@ -17,7 +17,7 @@ class CustomMenuProfile extends Profile
     /**
      * Right name for the plugin.
      */
-    public static string $rightname = CustomMenu::$rightname;
+    public static string $rightname = Config::RIGHTNAME;
 
     /**
      * Get the tab name for the profile item.

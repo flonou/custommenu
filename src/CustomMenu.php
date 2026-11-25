@@ -14,7 +14,7 @@ use Toolbox;
  */
 class CustomMenu extends CommonDBTM
 {
-    public static string $rightname = 'custommenu::custommenuentry';
+    public static string $rightname = Config::RIGHTNAME;
 
     /**
      * Valid link targets.

@@ -8,6 +8,7 @@ use Glpi\Plugin\Hooks;
 use GlpiPlugin\CustomMenu\CustomMenu;
 use GlpiPlugin\CustomMenu\CustomMenuProfile;
 
+require_once __DIR__ . '/src/Config.php';
 require_once __DIR__ . '/src/CustomMenu.php';
 require_once __DIR__ . '/src/CustomMenuProfile.php';
 
