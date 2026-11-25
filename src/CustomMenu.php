@@ -121,7 +121,7 @@ class CustomMenu extends CommonDBTM
         }
 
         $input['url'] = trim($input['url']);
-        if (!Toolbox::isUrl($input['url'])) {
+        if (!Toolbox::isValidWebUrl($input['url'])) {
             Session::addMessageAfterRedirect(
                 __('The URL is not valid.', 'custommenu'),
                 false,
