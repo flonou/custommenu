@@ -1,0 +1,152 @@
+
+{% extends "generic_show_form.html.twig" %}
+{% import "components/form/fields_macros.html.twig" as fields %}
+{% import "components/form/basic_inputs_macros.html.twig" as inputs %}
+
+{% block more_fields %}
+
+    {# URL #}
+    {{ fields.textField(
+        'url',
+        item.fields['url'] ?? '',
+        __('URL'),
+        {
+            'required': true,
+            'size': 60,
+            'placeholder': 'https://example.com or /front/somepage.php',
+            'is_horizontal': true
+        }
+    ) }}
+
+    {# Icon #}
+    {% set icon_help %}
+        <div class="text-muted small">
+            {{ __('Icon class from', 'custommenu') }}
+            <a href="https://tabler.io/icons" target="_blank" rel="noopener">
+                Tabler Icons
+            </a>
+            {{ __('(e.g. "ti ti-home").', 'custommenu') }}
+        </div>
+    {% endset %}
+
+    {{ fields.textField(
+        'icon',
+        item.fields['icon'] ?? 'ti ti-link',
+        __('Icon'),
+        {
+            'size': 40,
+            'placeholder': 'ti ti-home',
+            'is_horizontal': true,
+            'add_field_html': icon_help
+        }
+    ) }}
+
+    {# Position type #}
+    {{ fields.dropdownArrayField(
+        'position_type',
+        item.fields['position_type'] ?? 'end',
+        {
+            'end': __('End of menu', 'custommenu'),
+            'after': __('After menu item', 'custommenu'),
+            'before': __('Before menu item', 'custommenu'),
+            'index': __('At index', 'custommenu')
+        },
+        __('Position type', 'custommenu'),
+        {
+            'is_horizontal': true
+        }
+    ) }}
+
+    {# Position value #}
+    {% set position_help %}
+        <div class="text-muted small">
+            {{ __('For "After" or "Before": enter menu key (e.g., "assets", "help"). For "At index": enter a number. Leave empty for "End of menu".', 'custommenu') }}
+        </div>
+    {% endset %}
+
+    {{ fields.textField(
+        'position_value',
+        item.fields['position_value'] ?? '',
+        __('Position value', 'custommenu'),
+        {
+            'size': 30,
+            'placeholder': __('Menu key or index', 'custommenu'),
+            'is_horizontal': true,
+            'add_field_html': position_help
+        }
+    ) }}
+
+    {# Hidden position field #}
+    {{ inputs.hidden('position', item.fields['position'] ?? 'end') }}
+
+    {# Target #}
+    {{ fields.dropdownArrayField(
+        'target',
+        item.fields['target'] ?? '_self',
+        item.getAvailableTargets(),
+        __('Target'),
+        {
+            'is_horizontal': true
+        }
+    ) }}
+
+    {# Sort order #}
+    {% set sort_help %}
+        <div class="text-muted small">
+            {{ __('Determines the display order of menu items with the same position. Higher numbers appear first.', 'custommenu') }}
+        </div>
+    {% endset %}
+
+    {{ fields.numberField(
+        'sort_order',
+        item.fields['sort_order'] ?? 0,
+        __('Sort order', 'custommenu'),
+        {
+            'min': 0,
+            'is_horizontal': true,
+            'add_field_html': sort_help
+        }
+    ) }}
+
+    {# Position field JavaScript #}
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const positionType = document.querySelector('[name="position_type"]');
+        const positionValue = document.querySelector('[name="position_value"]');
+        const positionHidden = document.querySelector('[name="position"]');
+
+        if (!positionType || !positionHidden) {
+            return;
+        }
+
+        function updatePosition() {
+            const type = positionType.value;
+            const value = positionValue ? positionValue.value.trim() : '';
+
+            switch (type) {
+                case 'after':
+                case 'before':
+                    positionHidden.value = value ? type + ':' + value : 'end';
+                    break;
+
+                case 'index':
+                    positionHidden.value = value ? value : 'end';
+                    break;
+
+                default:
+                    positionHidden.value = 'end';
+            }
+        }
+
+        positionType.addEventListener('change', updatePosition);
+
+        if (positionValue) {
+            positionValue.addEventListener('input', updatePosition);
+            positionValue.addEventListener('change', updatePosition);
+        }
+
+        updatePosition();
+    });
+    </script>
+
+{% endblock %}

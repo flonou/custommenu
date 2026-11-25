@@ -1,9 +1,15 @@
 <?php
 
-define('PLUGIN_CUSTOMMENU_VERSION', '1.0.0');
+define('PLUGIN_CUSTOMMENU_VERSION', '2.0.0');
 define('PLUGIN_CUSTOMMENU_MIN_GLPI', '11.0.0');
 define('PLUGIN_CUSTOMMENU_MAX_GLPI', '12.0.99');
 
+use Glpi\Plugin\Hooks;
+use GlpiPlugin\CustomMenu\CustomMenu;
+use GlpiPlugin\CustomMenu\CustomMenuProfile;
+
+require_once __DIR__ . '/src/CustomMenu.php';
+require_once __DIR__ . '/src/CustomMenuProfile.php';
 
 /**
  * Register plugin hooks.
@@ -12,8 +18,19 @@ function plugin_init_custommenu()
 {
     global $PLUGIN_HOOKS;
 
-//    $PLUGIN_HOOKS[Hooks::REDEFINE_MENUS]['custom_menu'] = 'plugin_custom_menu_redefine_menus';
-    $PLUGIN_HOOKS['redefine_menus']['custommenu'] = 'plugin_custommenu_redefine_menus';
+    $PLUGIN_HOOKS[Hooks::MENU_TOADD]['custommenu'] = ['config' => CustomMenu::class];
+
+    // Configuration page shown by the "Configure" button on the plugin entry.
+    $PLUGIN_HOOKS[Hooks::CONFIG_PAGE]['custommenu'] = 'front/custommenu.php';
+
+    // Redefine the main GLPI menu with the custom entries.
+    $PLUGIN_HOOKS[Hooks::REDEFINE_MENUS]['custommenu'] = 'plugin_custommenu_redefine_menus';
+
+    // Register plugin classes
+    Plugin::registerClass(CustomMenu::class);
+    Plugin::registerClass(CustomMenuProfile::class, [
+        'addtabon' => Profile::class
+    ]);
 }
 
 
@@ -27,6 +44,7 @@ function plugin_version_custommenu()
         'version'        => PLUGIN_CUSTOMMENU_VERSION,
         'author'         => 'Florian Nouviale',
         'license'        => 'GPL-3.0-or-later',
+        'homepage'       => 'https://github.com/flonou/custommenu',
         'requirements'   => [
             'glpi' => [
                 'min' => PLUGIN_CUSTOMMENU_MIN_GLPI,
