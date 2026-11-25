@@ -5,9 +5,9 @@
     {# Position field JavaScript #}
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const positionTypeSelect = document.querySelector('.position-type-select select');
+        const positionTypeSelect = document.getElementById('position_type');
         const positionValueContainer = document.getElementById('position_value_container');
-        const positionValueInput = document.querySelector('#position_value_container input');
+        const positionValueInput = document.getElementById('position_value');
         const positionHiddenInput = document.querySelector('input[name="position"]');
         
         if (!positionTypeSelect || !positionValueContainer || !positionHiddenInput) {
@@ -82,16 +82,6 @@
     });
     </script>
     {{ fields.textField(
-        'name',
-        item.fields['name'] ?? '',
-        __('Name'),
-        {
-            'required': true,
-            'size': 40
-        }
-    ) }}
-
-    {{ fields.textField(
         'url',
         item.fields['url'] ?? '',
         __('URL'),
@@ -119,60 +109,41 @@
 
     <div class="form-field">
         <label for="position_type">{{ __('Position type', 'custommenu') }}</label>
-        {{ fields.dropdownField(
-            'position_type',
-            item.fields['position_type'] ?? 'end',
-            '',
-            {
-                'end': __('End of menu', 'custommenu'),
-                'after': __('After menu item', 'custommenu'),
-                'before': __('Before menu item', 'custommenu'),
-                'index': __('At index', 'custommenu')
-            },
-            {
-                'display_empty_choice': false,
-                'class': 'position-type-select'
-            }
-        ) }}
+        <select name="position_type" id="position_type" class="form-control position-type-select">
+            <option value="end" {% if (item.fields['position_type'] ?? 'end') == 'end' %}selected{% endif %}>{{ __('End of menu', 'custommenu') }}</option>
+            <option value="after" {% if (item.fields['position_type'] ?? '') == 'after' %}selected{% endif %}>{{ __('After menu item', 'custommenu') }}</option>
+            <option value="before" {% if (item.fields['position_type'] ?? '') == 'before' %}selected{% endif %}>{{ __('Before menu item', 'custommenu') }}</option>
+            <option value="index" {% if (item.fields['position_type'] ?? '') == 'index' %}selected{% endif %}>{{ __('At index', 'custommenu') }}</option>
+        </select>
     </div>
     
     <div class="form-field position-value-field" id="position_value_container">
         <label for="position_value">{{ __('Position value', 'custommenu') }}</label>
-        {{ fields.textField(
-            'position_value',
-            item.fields['position_value'] ?? '',
-            '',
-            {
-                'size': 30,
-                'placeholder': __('Menu key or index', 'custommenu')
-            }
-        ) }}
+        <input type="text" name="position_value" id="position_value" 
+               value="{{ item.fields['position_value'] ?? '' }}" 
+               size="30" 
+               placeholder="{{ __('Menu key or index', 'custommenu') }}"
+               class="form-control">
         <div class="form-field__help">
             {{ __('For "After" or "Before": enter menu key (e.g., "assets", "help"). For "At index": enter a number. Leave empty for "End of menu".', 'custommenu') }}
         </div>
     </div>
     
-    {{ fields.hiddenField('position', item.fields['position'] ?? 'end') }}
+    <input type="hidden" name="position" value="{{ item.fields['position'] ?? 'end' }}">
 
-    {{ fields.dropdownField(
-        'target',
-        item.fields['target'] ?? '_self',
-        __('Target'),
-        item.getAvailableTargets(),
-        {
-            'display_empty_choice': false
-        }
-    ) }}
+    <div class="form-field">
+        <label for="target">{{ __('Target') }}</label>
+        <select name="target" id="target" class="form-control">
+            {% for key, label in item.getAvailableTargets() %}
+                <option value="{{ key }}" {% if (item.fields['target'] ?? '') == key %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </div>
 
-    {{ fields.yesNoField(
-        'is_active',
-        item.fields['is_active'] ?? 1,
-        __('Active')
-    ) }}
-
-    {{ fields.integerField(
-        'sort_order',
-        item.fields['sort_order'] ?? 0,
-        __('Sort order', 'custommenu')
-    ) }}
+    <div class="form-field">
+        <label for="sort_order">{{ __('Sort order', 'custommenu') }}</label>
+        <input type="number" name="sort_order" id="sort_order" 
+               value="{{ item.fields['sort_order'] ?? 0 }}" 
+               class="form-control">
+    </div>
 {% endblock %}
