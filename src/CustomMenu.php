@@ -14,7 +14,7 @@ use Toolbox;
  */
 class CustomMenu extends CommonDBTM
 {
-    public static string $rightname = 'custommenu::custommenuentry'
+    public static string $rightname = 'custommenu::custommenuentry';
 
     /**
      * Valid link targets.
@@ -140,8 +140,30 @@ class CustomMenu extends CommonDBTM
             $input['target'] = self::TARGET_SELF;
         }
 
-        // Position: default to "end".
-        if (!isset($input['position']) || trim((string) $input['position']) === '') {
+        // Position: handle new position_type and position_value fields
+        if (isset($input['position_type']) && isset($input['position_value'])) {
+            $positionType = $input['position_type'];
+            $positionValue = trim((string) ($input['position_value'] ?? ''));
+            
+            switch ($positionType) {
+                case 'after':
+                    $input['position'] = $positionValue ? 'after:' . $positionValue : 'end';
+                    break;
+                case 'before':
+                    $input['position'] = $positionValue ? 'before:' . $positionValue : 'end';
+                    break;
+                case 'index':
+                    $input['position'] = $positionValue ? (int) $positionValue : 'end';
+                    break;
+                case 'end':
+                default:
+                    $input['position'] = 'end';
+                    break;
+            }
+            
+            // Remove the temporary fields
+            unset($input['position_type'], $input['position_value']);
+        } elseif (!isset($input['position']) || trim((string) $input['position']) === '') {
             $input['position'] = 'end';
         } else {
             $input['position'] = trim((string) $input['position']);
@@ -167,6 +189,28 @@ class CustomMenu extends CommonDBTM
     public function showForm($ID, array $options = [])
     {
         $this->initForm($ID, $options);
+
+        // Parse position for the form
+        $position = $this->fields['position'] ?? 'end';
+        $positionType = 'end';
+        $positionValue = '';
+        
+        if ($position === 'end') {
+            $positionType = 'end';
+        } elseif (str_starts_with($position, 'after:')) {
+            $positionType = 'after';
+            $positionValue = substr($position, 6);
+        } elseif (str_starts_with($position, 'before:')) {
+            $positionType = 'before';
+            $positionValue = substr($position, 7);
+        } elseif (is_numeric($position)) {
+            $positionType = 'index';
+            $positionValue = $position;
+        }
+        
+        // Add parsed position fields to the item
+        $this->fields['position_type'] = $positionType;
+        $this->fields['position_value'] = $positionValue;
 
         TemplateRenderer::getInstance()->display('@custommenu/custommenu.form.html.twig', [
             'item'   => $this,

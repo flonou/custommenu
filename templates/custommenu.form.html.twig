@@ -2,6 +2,85 @@
 {% import "components/form/fields_macros.html.twig" as fields %}
 
 {% block more_fields %}
+    {# Position field JavaScript #}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const positionTypeSelect = document.querySelector('.position-type-select select');
+        const positionValueContainer = document.getElementById('position_value_container');
+        const positionValueInput = document.querySelector('#position_value_container input');
+        const positionHiddenInput = document.querySelector('input[name="position"]');
+        
+        if (!positionTypeSelect || !positionValueContainer || !positionHiddenInput) {
+            return;
+        }
+        
+        // Parse existing position value to populate fields
+        const currentPosition = positionHiddenInput.value;
+        let positionType = 'end';
+        let positionValue = '';
+        
+        if (currentPosition === 'end') {
+            positionType = 'end';
+        } else if (currentPosition.startsWith('after:')) {
+            positionType = 'after';
+            positionValue = currentPosition.substring(6);
+        } else if (currentPosition.startsWith('before:')) {
+            positionType = 'before';
+            positionValue = currentPosition.substring(7);
+        } else if (!isNaN(currentPosition)) {
+            positionType = 'index';
+            positionValue = currentPosition;
+        }
+        
+        positionTypeSelect.value = positionType;
+        if (positionValueInput) {
+            positionValueInput.value = positionValue;
+        }
+        
+        // Toggle position value field visibility based on type
+        function updatePositionValueVisibility() {
+            const selectedType = positionTypeSelect.value;
+            if (selectedType === 'end') {
+                positionValueContainer.style.display = 'none';
+            } else {
+                positionValueContainer.style.display = 'block';
+            }
+        }
+        
+        // Update hidden position field when type or value changes
+        function updatePositionField() {
+            const selectedType = positionTypeSelect.value;
+            const value = positionValueInput ? positionValueInput.value.trim() : '';
+            
+            let position = 'end';
+            if (selectedType === 'after' && value) {
+                position = 'after:' + value;
+            } else if (selectedType === 'before' && value) {
+                position = 'before:' + value;
+            } else if (selectedType === 'index' && value) {
+                position = value;
+            }
+            
+            positionHiddenInput.value = position;
+        }
+        
+        // Initial visibility update
+        updatePositionValueVisibility();
+        
+        // Add event listeners
+        if (positionTypeSelect) {
+            positionTypeSelect.addEventListener('change', function() {
+                updatePositionValueVisibility();
+                updatePositionField();
+            });
+        }
+        
+        if (positionValueInput) {
+            positionValueInput.addEventListener('input', updatePositionField);
+            positionValueInput.addEventListener('change', updatePositionField);
+        }
+    });
+    </script>
     {{ fields.textField(
         'name',
         item.fields['name'] ?? '',
@@ -38,29 +117,54 @@
         {{ __('(e.g. "ti ti-home").', 'custommenu') }}
     </div>
 
-    {{ fields.textField(
-        'position',
-        item.fields['position'] ?? 'end',
-        __('Position'),
-        {
-            'size': 30,
-            'placeholder': 'after:assets, before:help, 5, or end'
-        }
-    ) }}
-    <div class="form-field__help">
-        {{ __('Position format: "after:<menukey>", "before:<menukey>", a numeric index, or "end".', 'custommenu') }}
+    <div class="form-field">
+        <label for="position_type">{{ __('Position type', 'custommenu') }}</label>
+        {{ fields.dropdownField(
+            'position_type',
+            item.fields['position_type'] ?? 'end',
+            '',
+            {
+                'end': __('End of menu', 'custommenu'),
+                'after': __('After menu item', 'custommenu'),
+                'before': __('Before menu item', 'custommenu'),
+                'index': __('At index', 'custommenu')
+            },
+            {
+                'display_empty_choice': false,
+                'class': 'position-type-select'
+            }
+        ) }}
     </div>
+    
+    <div class="form-field position-value-field" id="position_value_container">
+        <label for="position_value">{{ __('Position value', 'custommenu') }}</label>
+        {{ fields.textField(
+            'position_value',
+            item.fields['position_value'] ?? '',
+            '',
+            {
+                'size': 30,
+                'placeholder': __('Menu key or index', 'custommenu')
+            }
+        ) }}
+        <div class="form-field__help">
+            {{ __('For "After" or "Before": enter menu key (e.g., "assets", "help"). For "At index": enter a number. Leave empty for "End of menu".', 'custommenu') }}
+        </div>
+    </div>
+    
+    {{ fields.hiddenField('position', item.fields['position'] ?? 'end') }}
 
-    {{ fields.dropdown(
+    {{ fields.dropdownField(
         'target',
         item.fields['target'] ?? '_self',
         __('Target'),
+        item.getAvailableTargets(),
         {
-            'values': item.getAvailableTargets()
+            'display_empty_choice': false
         }
     ) }}
 
-    {{ fields.dropdownYesNo(
+    {{ fields.yesNoField(
         'is_active',
         item.fields['is_active'] ?? 1,
         __('Active')
