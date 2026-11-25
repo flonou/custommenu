@@ -10,7 +10,7 @@ Session::checkRight(CustomMenu::$rightname, READ);
 Html::header(
     CustomMenu::getTypeName(Session::getPluralNumber()),
     $_SERVER['PHP_SELF'],
-    "setup",
+    "plugins",
     CustomMenu::class,
     "custommenu"
 );

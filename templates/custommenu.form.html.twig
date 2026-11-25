@@ -7,8 +7,8 @@
         item.fields['name'] ?? '',
         __('Name'),
         {
-            'required' => true,
-            'size'     => 40
+            'required': true,
+            'size': 40
         }
     ) }}
 
@@ -17,9 +17,9 @@
         item.fields['url'] ?? '',
         __('URL'),
         {
-            'required' => true,
-            'size'     => 60,
-            'placeholder' => 'https://example.com or /front/somepage.php'
+            'required': true,
+            'size': 60,
+            'placeholder': 'https://example.com or /front/somepage.php'
         }
     ) }}
 
@@ -28,8 +28,8 @@
         item.fields['icon'] ?? 'ti ti-link',
         __('Icon'),
         {
-            'size'        => 40,
-            'placeholder' => 'ti ti-home'
+            'size': 40,
+            'placeholder': 'ti ti-home'
         }
     ) }}
     <div class="form-field__help">
@@ -43,8 +43,8 @@
         item.fields['position'] ?? 'end',
         __('Position'),
         {
-            'size'        => 30,
-            'placeholder' => 'after:assets, before:help, 5, or end'
+            'size': 30,
+            'placeholder': 'after:assets, before:help, 5, or end'
         }
     ) }}
     <div class="form-field__help">
@@ -56,7 +56,7 @@
         item.fields['target'] ?? '_self',
         __('Target'),
         {
-            'values' => item.getAvailableTargets()
+            'values': item.getAvailableTargets()
         }
     ) }}
 

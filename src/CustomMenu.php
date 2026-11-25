@@ -14,7 +14,7 @@ use Toolbox;
  */
 class CustomMenu extends CommonDBTM
 {
-    public static string $rightname = Config::RIGHTNAME;
+    public static string $rightname = 'custommenu::custommenuentry'
 
     /**
      * Valid link targets.
@@ -66,13 +66,6 @@ class CustomMenu extends CommonDBTM
         ];
     }
 
-    public static function getMenuContent()
-    {
-        $menu                    = parent::getMenuContent();
-        $menu['links']['search'] = CustomMenu::getSearchURL(false);
-
-        return $menu;
-    }
 
     /**
      * Sanitize and validate input before add/update.

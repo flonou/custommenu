@@ -43,6 +43,7 @@ function plugin_version_custommenu()
         'version'        => PLUGIN_CUSTOMMENU_VERSION,
         'author'         => 'Florian Nouviale',
         'license'        => 'GPL-3.0-or-later',
+        'homepage'       => 'https://github.com/flonou/custommenu',
         'requirements'   => [
             'glpi' => [
                 'min' => PLUGIN_CUSTOMMENU_MIN_GLPI,
